@@ -11,10 +11,9 @@ from lxml import etree
 
 # 爬取板块list，后续可以动态添加
 FETCH_LIST = {
-    'PART_TIME_JOB': {'name': '兼职实习新贴', 'url': 'https://bbs.byr.cn/board/ParttimeJob'}
+    'PART_TIME_JOB': {'name': '兼职实习', 'url': 'https://bbs.byr.cn/board/ParttimeJob'},
+    # add here...
 }
-
-PART_TIME_JOB_URL = 'https://bbs.byr.cn/board/ParttimeJob'
 
 # 模拟浏览器信息
 USER_AGENT = 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0'
@@ -113,7 +112,7 @@ def fetch_one_module(module_url):
 
 
 def build_msg_one_module(list_articles, module_name):
-    res = '{date} {module_name}:'.format(date=YESTERDAY, module_name=module_name) + os.linesep
+    res = '{date} {module_name}新帖:'.format(date=YESTERDAY, module_name=module_name) + os.linesep
     for idx, article in enumerate(list_articles):
         res += '{no}. {title} {link}'.format(no=str(idx + 1), title=article['title'], link=article['link'])
         res += os.linesep
