@@ -50,14 +50,14 @@ def fetch_one_page(url, page_num):
     last_flag = True
     cookie = COOKIE_TEMP.format(username=USERNAME, password_session=PASSWORD_SESSION)
     session = requests.Session()
+    params = {
+        "_uid": USERNAME,
+        "p": str(page_num)
+    }
     headers = {
         "User-Agent": USER_AGENT,
         "cookie": cookie,
         "x-requested-with": "XMLHttpRequest"
-    }
-    params = {
-        "_uid": USERNAME,
-        "p": str(page_num)
     }
     response = session.get(url=url, headers=headers, params=params)
     html = etree.HTML(response.text)
