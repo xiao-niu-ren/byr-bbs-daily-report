@@ -9,7 +9,11 @@ import time
 import requests
 from lxml import etree
 
-# 爬取板块url
+# 爬取板块list，后续可以动态添加
+FETCH_LIST = {
+    'PART_TIME_JOB': {'name': '兼职实习新贴', 'url': 'https://bbs.byr.cn/board/ParttimeJob'}
+}
+
 PART_TIME_JOB_URL = 'https://bbs.byr.cn/board/ParttimeJob'
 
 # 模拟浏览器信息
@@ -35,9 +39,15 @@ TODAY = BJ_TIME_NOW.strftime('%Y-%m-%d')
 YESTERDAY = (BJ_TIME_NOW.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 
 
-def fetch_one_page(idx):
+def fetch_one_page(url, page_num):
+    """
+        目前只查昨天的文章
+        :param url: 爬取url
+        :param page_num: 第几页
+        :return: res-结果list, last_flag-当前page是否是是最后一页
+    """
     res = []
-    fetch_flag = True
+    last_flag = True
     cookie = COOKIE_TEMP.format(username=USERNAME, password_session=PASSWORD_SESSION)
     session = requests.Session()
     headers = {
@@ -47,9 +57,9 @@ def fetch_one_page(idx):
     }
     params = {
         "_uid": USERNAME,
-        "p": str(index)
+        "p": str(page_num)
     }
-    response = session.get(url=PART_TIME_JOB_URL, headers=headers, params=params)
+    response = session.get(url=url, headers=headers, params=params)
     html = etree.HTML(response.text)
     len_trs = len(html.xpath('/html/body/div[3]/table/tbody//tr'))
     for i in range(len_trs):
@@ -71,44 +81,65 @@ def fetch_one_page(idx):
         except Exception as e:
             update_date = TODAY
 
-        if idx != 1 and update_date != TODAY and update_date != YESTERDAY:
-            fetch_flag = False
+        if page_num != 1 and update_date != TODAY and update_date != YESTERDAY:
+            last_flag = False
 
         if create_date == YESTERDAY:
             dic = {'title': title, 'link': link}
             res.append(dic)
 
-    return res, fetch_flag
+    return res, last_flag
 
 
-list_articles = []
-flag = True
-index = 1
-while flag:
-    # byr做了反爬的降级，连续发送请求会直接返空
-    time.sleep(20)
-    one_page_article, flag = fetch_one_page(index)
-    list_articles += one_page_article
-    index += 1
+def fetch_one_module(module_url):
+    res = []
+    flag = True
+    idx = 1
+    start_time = time.time()
+    while flag:
+        # byr做了反爬的降级，连续发送请求会直接返空
+        time.sleep(20)
 
-# build msg
-callback_data = ''
-callback_data += '{date} 兼职实习新贴:'.format(date=YESTERDAY) + os.linesep
-for idx, article in enumerate(list_articles):
-    callback_data += '{no}. {title} {link}'.format(no=str(idx + 1), title=article['title'], link=article['link'])
-    callback_data += os.linesep
+        # 防止死循环
+        current_time = time.time()
+        if current_time - start_time > 10 * 60:
+            break
 
-# send to wechat/xiaoniuren
-try:
-    requests.post(url=CALLBACK_URL, params={"msg": callback_data})
-except Exception as e:
-    logging.info("callback error")
+        # 获取单页数据并拼接
+        one_page_article, flag = fetch_one_page(module_url, idx)
+        res += one_page_article
+        idx += 1
+    return res
 
-# send to wechat/room
-try:
-    requests.post(url=CALLBACK_URL, json={
-        "wxid": ROOM_ID,
-        "content": callback_data
-    })
-except Exception as e:
-    logging.info("callback error")
+
+def build_msg_one_module(list_articles, module_name):
+    res = '{date} {module_name}:'.format(date=YESTERDAY, module_name=module_name) + os.linesep
+    for idx, article in enumerate(list_articles):
+        res += '{no}. {title} {link}'.format(no=str(idx + 1), title=article['title'], link=article['link'])
+        res += os.linesep
+    return res
+
+
+###############################################################################
+# 执行
+###############################################################################
+for key in FETCH_LIST.keys():
+    name = FETCH_LIST[key]['name']
+    url = FETCH_LIST[key]['url']
+    list_articles = fetch_one_module(url)
+    msg = build_msg_one_module(list_articles, name)
+
+    # send to wechat
+    try:
+        requests.post(url=CALLBACK_URL, params={"msg": msg})
+    except Exception as e:
+        logging.info("callback error")
+
+    # send to wechat room
+    try:
+        requests.post(url=CALLBACK_URL, json={
+            "wxid": ROOM_ID,
+            "content": msg
+        })
+    except Exception as e:
+        logging.info("callback error")
