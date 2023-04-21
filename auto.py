@@ -128,13 +128,7 @@ for key in FETCH_LIST.keys():
     list_articles = fetch_one_module(url)
     msg = build_msg_one_module(list_articles, name)
 
-    # # send to wechat
-    # try:
-    #     requests.post(url=CALLBACK_URL, params={"msg": msg})
-    # except Exception as e:
-    #     logging.info("callback error")
-
-    # send to wechat room
+    # send to wechat
     try:
         for room_id in WeChat_ID_LIST:
             requests.post(url=CALLBACK_URL, json={
@@ -142,4 +136,6 @@ for key in FETCH_LIST.keys():
                 "content": msg
             })
     except Exception as e:
-        logging.info("callback error")
+        logging.err(name + "板块 callback error")
+
+    logging.info(name + "板块 callback success")
