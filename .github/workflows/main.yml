@@ -5,7 +5,7 @@ name: BYR BBS Crawler
 
 on:
   schedule:
-    - cron: '33 23 * * *'
+    - cron: '43 23 * * *'
   workflow_dispatch:
 jobs:
   build:
