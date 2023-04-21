@@ -122,6 +122,9 @@ def build_msg_one_module(list_articles, module_name):
 ###############################################################################
 # 执行
 ###############################################################################
+# 设置log
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(filename)s:%(lineno)s - %(message)s')
+
 for key in FETCH_LIST.keys():
     name = FETCH_LIST[key]['name']
     url = FETCH_LIST[key]['url']
@@ -136,6 +139,6 @@ for key in FETCH_LIST.keys():
                 "content": msg
             })
     except Exception as e:
-        logging.err(name + "板块 callback error")
+        logging.info(name + "板块 callback error")
 
     logging.info(name + "板块 callback success")
