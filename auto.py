@@ -28,7 +28,7 @@ try:
 except Exception as e:
     pass
 try:
-    ROOM_ID = os.environ['ROOM_ID']
+    WeChat_ID_LIST = os.environ['WeChat_ID_LIST'].split(',', -1)
 except Exception as e:
     pass
 
@@ -46,7 +46,7 @@ def fetch_one_page(url, page_num):
         :return: res-结果list, last_flag-当前page是否是是最后一页
     """
     res = []
-    last_flag = True
+    last_flag = False
     cookie = COOKIE_TEMP.format(username=USERNAME, password_session=PASSWORD_SESSION)
     session = requests.Session()
     params = {
@@ -81,7 +81,7 @@ def fetch_one_page(url, page_num):
             update_date = TODAY
 
         if page_num != 1 and update_date != TODAY and update_date != YESTERDAY:
-            last_flag = False
+            last_flag = True
 
         if create_date == YESTERDAY:
             dic = {'title': title, 'link': link}
@@ -92,10 +92,10 @@ def fetch_one_page(url, page_num):
 
 def fetch_one_module(module_url):
     res = []
-    flag = True
+    end_flag = False
     idx = 1
     start_time = time.time()
-    while flag:
+    while not end_flag:
         # byr做了反爬的降级，连续发送请求会直接返空
         time.sleep(20)
 
@@ -105,7 +105,7 @@ def fetch_one_module(module_url):
             break
 
         # 获取单页数据并拼接
-        one_page_article, flag = fetch_one_page(module_url, idx)
+        one_page_article, end_flag = fetch_one_page(module_url, idx)
         res += one_page_article
         idx += 1
     return res
@@ -136,9 +136,10 @@ for key in FETCH_LIST.keys():
 
     # send to wechat room
     try:
-        requests.post(url=CALLBACK_URL, json={
-            "wxid": ROOM_ID,
-            "content": msg
-        })
+        for room_id in WeChat_ID_LIST:
+            requests.post(url=CALLBACK_URL, json={
+                "wxid": room_id,
+                "content": msg
+            })
     except Exception as e:
         logging.info("callback error")
