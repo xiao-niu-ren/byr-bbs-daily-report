@@ -12,7 +12,7 @@ from lxml import etree
 # 爬取板块list，后续可以动态添加
 FETCH_LIST = {
     'PART_TIME_JOB': {'name': '兼职实习', 'url': 'https://bbs.byr.cn/board/ParttimeJob'},
-    'JOB_INFO': {'name': '招聘信息', 'url': 'https://bbs.byr.cn/board/JobInfo', 'title_keyword': '实习'},
+    'JOB_INFO': {'name': '招聘信息', 'url': 'https://bbs.byr.cn/board/JobInfo', 'title_keywords': ['实习', '麦吉太文']},
     # add here...
 }
 
@@ -39,12 +39,28 @@ TODAY = BJ_TIME_NOW.strftime('%Y-%m-%d')
 YESTERDAY = (BJ_TIME_NOW.now() - timedelta(days=1)).strftime('%Y-%m-%d')
 
 
-def fetch_one_page(url, page_num, title_keyword=''):
+def is_hit_keyword(title, title_keywords):
+    """
+        判断title是否包含任意keyword
+        :param title: 帖子标题
+        :param title_keywords: keyword的list 为空表示所有标题都可
+        :return: bool
+    """
+    if not title_keywords:
+        return True
+    else:
+        for keyword in title_keywords:
+            if keyword in title:
+                return True
+        return False
+
+
+def fetch_one_page(url, page_num, title_keywords=[]):
     """
         目前只查昨天的文章
         :param url: 爬取url
         :param page_num: 第几页
-        :param title_keyword:  默认''表示获取所有帖子, 不为空串表示只获取标题包含该特定关键词的帖子
+        :param title_keywords:  默认[]表示获取所有帖子, 不为空list表示只获取标题包含该特定关键词的帖子
         :return: res-结果list, last_flag-当前page是否是是最后一页
     """
     res = []
@@ -86,14 +102,14 @@ def fetch_one_page(url, page_num, title_keyword=''):
             last_flag = True
 
         if create_date == YESTERDAY:
-            if title_keyword == '' or title_keyword in title:
+            if is_hit_keyword(title, title_keywords):
                 dic = {'title': title, 'link': link}
                 res.append(dic)
 
     return res, last_flag
 
 
-def fetch_one_module(module_url, title_keyword):
+def fetch_one_module(module_url, title_keywords=[]):
     res = []
     end_flag = False
     idx = 1
@@ -108,16 +124,19 @@ def fetch_one_module(module_url, title_keyword):
             break
 
         # 获取单页数据并拼接
-        one_page_article, end_flag = fetch_one_page(module_url, idx, title_keyword)
+        one_page_article, end_flag = fetch_one_page(module_url, idx, title_keywords)
         res += one_page_article
         idx += 1
     return res
 
 
-def build_msg_one_module(list_articles, module_name, title_keyword):
+def build_msg_one_module(list_articles, module_name, title_keywords=[]):
     res = '{date} {module_name}新帖:'.format(date=YESTERDAY, module_name=module_name) + os.linesep
-    if title_keyword != '':
-        res += '标题中包含关键词"{title_keyword}"'.format(title_keyword=title_keyword) + os.linesep
+    if title_keywords:
+        res += '标题中包含关键词'
+        for keyword in title_keywords:
+            res += '"' + keyword + '"'
+        res += os.linesep
     for idx, article in enumerate(list_articles):
         res += '{no}. {title} {link}'.format(no=str(idx + 1), title=article['title'], link=article['link'])
         res += os.linesep
@@ -134,11 +153,11 @@ for key in FETCH_LIST.keys():
     # get meta_info
     name = FETCH_LIST[key]['name']
     url = FETCH_LIST[key]['url']
-    title_keyword = FETCH_LIST[key].get('title_keyword', '')
+    title_keywords = FETCH_LIST[key].get('title_keywords', [])
 
     # 爬取 & 构造数据
-    list_articles = fetch_one_module(url, title_keyword)
-    msg = build_msg_one_module(list_articles, name, title_keyword)
+    list_articles = fetch_one_module(url, title_keywords)
+    msg = build_msg_one_module(list_articles, name, title_keywords)
 
     # send to wechat
     try:
