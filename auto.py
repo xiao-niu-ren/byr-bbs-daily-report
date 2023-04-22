@@ -115,7 +115,7 @@ def fetch_one_module(module_url, title_keyword):
 
 
 def build_msg_one_module(list_articles, module_name, title_keyword):
-    res = '{date} {module_name}板块新帖:'.format(date=YESTERDAY, module_name=module_name) + os.linesep
+    res = '{date} {module_name}新帖:'.format(date=YESTERDAY, module_name=module_name) + os.linesep
     if title_keyword != '':
         res += '标题中包含关键词"{title_keyword}"'.format(title_keyword=title_keyword) + os.linesep
     for idx, article in enumerate(list_articles):
@@ -131,9 +131,12 @@ def build_msg_one_module(list_articles, module_name, title_keyword):
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(filename)s:%(lineno)s - %(message)s')
 
 for key in FETCH_LIST.keys():
+    # get meta_info
     name = FETCH_LIST[key]['name']
     url = FETCH_LIST[key]['url']
     title_keyword = FETCH_LIST[key].get('title_keyword', '')
+
+    # 爬取 & 构造数据
     list_articles = fetch_one_module(url, title_keyword)
     msg = build_msg_one_module(list_articles, name, title_keyword)
 
