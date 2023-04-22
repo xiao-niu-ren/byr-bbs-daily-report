@@ -12,7 +12,7 @@ from lxml import etree
 # 爬取板块list，后续可以动态添加
 FETCH_LIST = {
     'PART_TIME_JOB': {'name': '兼职实习', 'url': 'https://bbs.byr.cn/board/ParttimeJob'},
-    'JOB_INFO': {'name': '招聘信息', 'url': 'https://bbs.byr.cn/board/JobInfo', 'title_keywords': ['实习', '麦吉太文']},
+    'JOB_INFO': {'name': '招聘信息', 'url': 'https://bbs.byr.cn/board/JobInfo', 'title_keywords': ['实习', '24', '暑期']},
     # add here...
 }
 
@@ -133,7 +133,7 @@ def fetch_one_module(module_url, title_keywords=[]):
 def build_msg_one_module(list_articles, module_name, title_keywords=[]):
     res = '{date} {module_name}新帖:'.format(date=YESTERDAY, module_name=module_name) + os.linesep
     if title_keywords:
-        res += '标题中包含关键词'
+        res += '标题中包含以下任一关键词' + os.linesep
         for keyword in title_keywords:
             res += '"' + keyword + '"'
         res += os.linesep
