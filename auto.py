@@ -29,7 +29,7 @@ try:
 except Exception as e:
     pass
 try:
-    WeChat_ID_LIST = os.environ['WeChat_ID_LIST'].split(',', -1)
+    WECHAT_ID_LIST = os.environ['WeChat_ID_LIST'].split(',', -1)
 except Exception as e:
     pass
 
@@ -43,7 +43,7 @@ def is_hit_keyword(title, title_keywords):
     """
         判断title是否包含任意keyword
         :param title: 帖子标题
-        :param title_keywords: keyword的list 为空表示所有标题都可
+        :param title_keywords: keyword的list, 为空表示所有标题都可
         :return: bool
     """
     if not title_keywords:
@@ -57,7 +57,7 @@ def is_hit_keyword(title, title_keywords):
 
 def fetch_one_page(url, page_num, title_keywords=[]):
     """
-        目前只查昨天的文章
+        爬取一个页面, 目前只爬昨天的文章
         :param url: 爬取url
         :param page_num: 第几页
         :param title_keywords:  默认[]表示获取所有帖子, 不为空list表示只获取标题包含该特定关键词的帖子
@@ -101,15 +101,20 @@ def fetch_one_page(url, page_num, title_keywords=[]):
         if page_num != 1 and update_date != TODAY and update_date != YESTERDAY:
             last_flag = True
 
-        if create_date == YESTERDAY:
-            if is_hit_keyword(title, title_keywords):
-                dic = {'title': title, 'link': link}
-                res.append(dic)
+        if create_date == YESTERDAY and is_hit_keyword(title, title_keywords):
+            dic = {'title': title, 'link': link}
+            res.append(dic)
 
     return res, last_flag
 
 
 def fetch_one_module(module_url, title_keywords=[]):
+    """
+        爬取一个板块
+        :param module_url: url
+        :param title_keywords: 默认[]表示获取所有帖子, 不为空list表示只获取标题包含该特定关键词的帖子
+        :return: res-结果list
+    """
     res = []
     end_flag = False
     idx = 1
@@ -130,7 +135,14 @@ def fetch_one_module(module_url, title_keywords=[]):
     return res
 
 
-def build_msg_one_module(list_articles, module_name, title_keywords=[]):
+def build_msg_for_one_module(list_articles, module_name, title_keywords=[]):
+    """
+        为一个板块的爬取结果构造推送消息
+        :param list_articles: 爬取结果
+        :param module_name: 板块名
+        :param title_keywords: 默认[]表示获取所有帖子, 不为空list表示只获取标题包含该特定关键词的帖子
+    :return: res-结果msg
+    """
     res = '{date} {module_name}新帖:'.format(date=YESTERDAY, module_name=module_name) + os.linesep
     if title_keywords:
         res += '标题中包含以下任一关键词' + os.linesep
@@ -157,13 +169,13 @@ for key in FETCH_LIST.keys():
 
     # 爬取 & 构造数据
     list_articles = fetch_one_module(url, title_keywords)
-    msg = build_msg_one_module(list_articles, name, title_keywords)
+    msg = build_msg_for_one_module(list_articles, name, title_keywords)
 
     # send to wechat
     try:
-        for room_id in WeChat_ID_LIST:
+        for wx_id in WECHAT_ID_LIST:
             requests.post(url=CALLBACK_URL, json={
-                "wxid": room_id,
+                "wxid": wx_id,
                 "content": msg
             })
     except Exception as e:
