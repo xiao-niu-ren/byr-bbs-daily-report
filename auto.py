@@ -154,6 +154,13 @@ def build_msg_for_one_module(list_articles, module_name, title_keywords=[]):
         res += os.linesep
     return res
 
+def send_to_wechat(msg):
+    for wx_id in WECHAT_ID_LIST:
+        requests.post(url=CALLBACK_URL, json={
+            "wxid": wx_id,
+            "content": msg
+        })
+
 
 ###############################################################################
 # 执行
@@ -161,23 +168,26 @@ def build_msg_for_one_module(list_articles, module_name, title_keywords=[]):
 # 设置log
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(filename)s:%(lineno)s - %(message)s')
 
+
 for key in FETCH_LIST.keys():
-    # get meta_info
+    # get meta-info
     name = FETCH_LIST[key]['name']
     url = FETCH_LIST[key]['url']
     title_keywords = FETCH_LIST[key].get('title_keywords', [])
 
-    # 爬取 & 构造数据
-    list_articles = fetch_one_module(url, title_keywords)
+    # crawler
+    try:
+        list_articles = fetch_one_module(url, title_keywords)
+    except Exception as e:
+        logging.info(name + "板块 crawler error")
+        send_to_wechat(name + "板块爬取失败, 请稍后手动重试~")
+
+    # build msg
     msg = build_msg_for_one_module(list_articles, name, title_keywords)
 
     # send to wechat
     try:
-        for wx_id in WECHAT_ID_LIST:
-            requests.post(url=CALLBACK_URL, json={
-                "wxid": wx_id,
-                "content": msg
-            })
+        send_to_wechat(msg)
     except Exception as e:
         logging.info(name + "板块 callback error")
 
