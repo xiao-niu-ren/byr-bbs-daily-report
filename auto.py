@@ -154,6 +154,7 @@ def build_msg_for_one_module(list_articles, module_name, title_keywords=[]):
         res += os.linesep
     return res
 
+
 def send_to_wechat(msg):
     for wx_id in WECHAT_ID_LIST:
         requests.post(url=CALLBACK_URL, json={
@@ -167,7 +168,6 @@ def send_to_wechat(msg):
 ###############################################################################
 # 设置log
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(filename)s:%(lineno)s - %(message)s')
-
 
 for key in FETCH_LIST.keys():
     # get meta-info
