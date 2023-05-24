@@ -179,8 +179,8 @@ for key in FETCH_LIST.keys():
     try:
         list_articles = fetch_one_module(url, title_keywords)
     except Exception as e:
-        logging.info(name + "板块 crawler error")
-        send_to_wechat(name + "板块爬取失败, 请稍后手动重试~")
+        logging.info(YESTERDAY + name + "板块 crawler error")
+        send_to_wechat(YESTERDAY + name + "板块爬取失败, 请稍后手动重试~")
 
     # build msg
     msg = build_msg_for_one_module(list_articles, name, title_keywords)
