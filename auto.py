@@ -36,7 +36,7 @@ except Exception as e:
 # CN时间获取
 BJ_TIME_NOW = datetime.utcnow().replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=8)))
 TODAY = BJ_TIME_NOW.strftime('%Y-%m-%d')
-YESTERDAY = (BJ_TIME_NOW.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+YESTERDAY = (BJ_TIME_NOW - timedelta(days=1)).strftime('%Y-%m-%d')
 
 
 def is_hit_keyword(title, title_keywords):
