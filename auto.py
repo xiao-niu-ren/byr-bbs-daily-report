@@ -12,7 +12,7 @@ from lxml import etree
 # 爬取板块list, 后续可以动态添加, title_keyword表示只爬取标题中含有任一该关键词list中元素的帖子, 没有该字段表示都爬
 FETCH_LIST = {
     'PART_TIME_JOB': {'name': '兼职实习', 'url': 'https://bbs.byr.cn/board/ParttimeJob'},
-    'JOB_INFO': {'name': '招聘信息', 'url': 'https://bbs.byr.cn/board/JobInfo', 'title_keywords': ['实习', '24', '暑期']},
+    'JOB_INFO': {'name': '招聘信息', 'url': 'https://bbs.byr.cn/board/JobInfo', 'title_keywords': ['实习', '24', '暑期', '校招', '提前']},
     # add here...
 }
 
