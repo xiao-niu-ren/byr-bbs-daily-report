@@ -13,4 +13,4 @@
    "WeChat_ID_LIST": "wx123,123@chatroom" #用,分隔，不能有空格
    }
     ```
-3. 自动执行时间在./github/workflows/main.yml中有说明，cron表达式配置
+3. 自动执行时间在./github/workflows/main.yml中有说明，cron表达式配置~
