@@ -11,10 +11,11 @@ from lxml import etree
 
 # 爬取板块list, 后续可以动态添加, title_keyword表示只爬取标题中含有任一该关键词list中元素的帖子, 没有该字段表示都爬
 FETCH_LIST = {
-    'PART_TIME_JOB': {'name': '兼职实习', 'url': 'https://bbs.byr.cn/board/ParttimeJob'},
-    'JOB_INFO': {'name': '招聘信息', 'url': 'https://bbs.byr.cn/board/JobInfo', 'title_keywords': ['实习', '24', '校招', '提前']},
+    # 'PART_TIME_JOB': {'name': '兼职实习', 'url': 'https://bbs.byr.cn/board/ParttimeJob'},
+    # 'JOB_INFO': {'name': '招聘信息', 'url': 'https://bbs.byr.cn/board/JobInfo', 'title_keywords': ['实习', '24', '校招', '提前']},
     'I_Whisper': {'name': '悄悄话', 'url': 'https://bbs.byr.cn/board/IWhisper',
-                  'title_keywords': ['java', 'cpp', 'c++', 'go', 'python', '校招', '秋招', 'offer', '实习', '后端', '开发', '大厂', '互联网', '国企', '银行', '三方', '开奖', '选择', '字节', '阿里', '淘天', '阿里国际', '阿里云', '腾讯', 'wxg', 'ieg', '美团', '团子', '小红书', 'xhs', '快手', '手子', '京东', '滴滴', '百度', '网易', '多多', 'pdd', '蚂蚁']}
+                  # 'title_keywords': ['java', 'cpp', 'c++', 'go', 'python', '校招', '秋招', 'offer', '实习', '后端', '开发', '大厂', '互联网', '国企', '银行', '三方', '开奖', '选择', '字节', '阿里', '淘天', '阿里国际', '阿里云', '腾讯', 'wxg', 'ieg', '美团', '团子', '小红书', 'xhs', '快手', '手子', '京东', '滴滴', '百度', '网易', '多多', 'pdd', '蚂蚁']}
+                  'title_keywords': ['论文', '专硕', '答辩', '毕业', '学硕']}
     # add here...
 }
 
