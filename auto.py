@@ -141,7 +141,7 @@ def build_msg_for_one_module(list_articles, module_name, title_keywords=[]):
     """
         为一个板块的爬取结果构造推送消息
         :param list_articles: 爬取结果
-        :param module_name: 板块名
+        :param module_name: 板块名称
         :param title_keywords: 默认[]表示获取所有帖子, 不为空list表示只获取标题包含该特定关键词的帖子
     :return: res-结果msg
     """
