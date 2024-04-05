@@ -15,7 +15,7 @@ FETCH_LIST = {
     # 'JOB_INFO': {'name': '招聘信息', 'url': 'https://bbs.byr.cn/board/JobInfo', 'title_keywords': ['实习', '24', '校招', '提前']},
     'I_Whisper': {'name': '悄悄话', 'url': 'https://bbs.byr.cn/board/IWhisper',
                   # 'title_keywords': ['java', 'cpp', 'c++', 'go', 'python', '校招', '秋招', 'offer', '实习', '后端', '开发', '大厂', '互联网', '国企', '银行', '三方', '开奖', '选择', '字节', '阿里', '淘天', '阿里国际', '阿里云', '腾讯', 'wxg', 'ieg', '美团', '团子', '小红书', 'xhs', '快手', '手子', '京东', '滴滴', '百度', '网易', '多多', 'pdd', '蚂蚁']}
-                  'title_keywords': ['论文', '专硕', '答辩', '毕业', '学硕']}
+                  'title_keywords': ['论文', '专硕', '答辩', '毕业', '学硕', '计算机', '计院']}
     # add here...
 }
 
